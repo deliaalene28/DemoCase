@@ -15,7 +15,7 @@ metadata:
 spec:
   imagePullSecrets:
     - name: cp-test-docker-registry # Name of Docker regressionistry secret.
-  entrypoint: tfm-abs-training
+  entrypoint: oreka-eguna-training
   arguments:
     parameters: # placeholder for string like inputs
         - name: DT_MAX_DEPTH # identifier local to this workflow
