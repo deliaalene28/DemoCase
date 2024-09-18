@@ -4,9 +4,9 @@ metadata:
   name: oreka-eguna-train-0 # Executable ID (max length 64 lowercase-hypen-separated), please modify this to any value if you are not the only user of your SAP AI Core instance. Example: `text-clf-train-tutorial-1234`
   annotations:
     scenarios.ai.sap.com/description: "Train ABS"
-    scenarios.ai.sap.com/name: tfm-abs-scenario
+    scenarios.ai.sap.com/name: oreka-eguna-scenario
     executables.ai.sap.com/description: "Train ABS."
-    executables.ai.sap.com/name: "tfm-abs-exec"
+    executables.ai.sap.com/name: "oreka-eguna-exec"
     artifacts.ai.sap.com/mytraindataset.kind: "dataset" # Helps in suggesting the kind of inputs that can be attached.
     artifacts.ai.sap.com/modelai.kind: "model" # Helps in suggesting the kind of artifact that can be generated.
   labels:
