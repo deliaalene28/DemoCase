@@ -38,6 +38,26 @@ spec:
             value: "{{workflow.parameters.DT_MAX_DEPTH}}" # value to set from local (to workflow) variable DT_MAX_DEPTH
           - name: MIN_PERCENTAGE # name of the environment variable inside Docker container
             value: "{{workflow.parameters.MIN_PERCENTAGE}}" # value to set from local (to workflow) variable MIN_PERCENTAGE
+          - name: HANA_ADDRESS # Name of the environment variable that will be available in the image
+            valueFrom:
+              secretKeyRef:
+                name: hanacred  # Name of the generic secret created in SAP AI Core for the Resource Group
+                key: address    # Name of the key from the JSON string that is saved as generic secret    
+          - name: HANA_PORT 
+            valueFrom:
+              secretKeyRef:
+                name: hanacred   
+                key: port    
+          - name: HANA_USER 
+            valueFrom:
+              secretKeyRef:
+                name: hanacred   
+                key: user   
+          - name: HANA_PASSWORD 
+            valueFrom:
+              secretKeyRef:
+                name: hanacred   
+                key: password   
         args:
           - >
             set -e && echo "---Start Training---" && python /app/src/train.py && ls -lR /app/model && echo "---End Training---"
