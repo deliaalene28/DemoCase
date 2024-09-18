@@ -10,7 +10,7 @@ metadata:
     artifacts.ai.sap.com/mytraindataset.kind: "dataset" # Helps in suggesting the kind of inputs that can be attached.
     artifacts.ai.sap.com/modelai.kind: "model" # Helps in suggesting the kind of artifact that can be generated.
   labels:
-    scenarios.ai.sap.com/id: tfm-abs-scenario # Unique ID for the AI scenario.
+    scenarios.ai.sap.com/id: oreka-eguna-scenario # Unique ID for the AI scenario.
     ai.sap.com/version: "1.0.1"
 spec:
   imagePullSecrets:
