@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: oreka-eguna-train-0 # Executable ID (max length 64 lowercase-hypen-separated), please modify this to any value if you are not the only user of your SAP AI Core instance. Example: `text-clf-train-tutorial-1234`
+  annotations:
+    scenarios.ai.sap.com/description: "Train ABS"
+    scenarios.ai.sap.com/name: tfm-abs-scenario
+    executables.ai.sap.com/description: "Train ABS."
+    executables.ai.sap.com/name: "tfm-abs-exec"
+    artifacts.ai.sap.com/mytraindataset.kind: "dataset" # Helps in suggesting the kind of inputs that can be attached.
+    artifacts.ai.sap.com/modelai.kind: "model" # Helps in suggesting the kind of artifact that can be generated.
+  labels:
+    scenarios.ai.sap.com/id: tfm-abs-scenario # Unique ID for the AI scenario.
+    ai.sap.com/version: "1.0.1"
+spec:
+  imagePullSecrets:
+    - name: cp-test-docker-registry # Name of Docker regressionistry secret.
+  entrypoint: tfm-abs-training
+  arguments:
+    parameters: # placeholder for string like inputs
+        - name: DT_MAX_DEPTH # identifier local to this workflow
+        - name: ALG # identifier local to this workflow
+        - name: MIN_PERCENTAGE  # identifier local to this workflow
+  templates:
+    - name: oreka-eguna-training
+      metadata:
+        labels:
+          ai.sap.com/resourcePlan: starter
+      inputs:
+        artifacts:  # placeholder for cloud storage attachements
+        - name: mytraindataset # a name for the placeholder
+          path: /app/data/ # where to copy in the Dataset in the Docker image
+      outputs:
+        artifacts:
+          - name: modelai # name of the artifact generated, and folder name when placed in S3, complete directory will be `../<executaion_id>/housepricemodel`
+            globalName: gmodelai # local identifier name to the workflow, also used above in annotation
+            path: /app/model/ # from which folder in docker image (after running workflow step) copy contents to cloud storage
+            archive:
+              none:   # specif
+      container:
+        # URL of Docker image that was previously uploaded to Docker Hub.
+        image: docker.io/deliaalene/oreka-eguna:01
+        imagePullPolicy: Always
+        command: ["/bin/sh", "-c"]
+        env:
+          - name: ALG # name of the environment variable inside Docker container
+            value: "{{workflow.parameters.ALG}}" # value to set from local (to workflow) variable DT_MAX_DEPTH
+          - name: DT_MAX_DEPTH # name of the environment variable inside Docker container
+            value: "{{workflow.parameters.DT_MAX_DEPTH}}" # value to set from local (to workflow) variable DT_MAX_DEPTH
+          - name: MIN_PERCENTAGE # name of the environment variable inside Docker container
+            value: "{{workflow.parameters.MIN_PERCENTAGE}}" # value to set from local (to workflow) variable MIN_PERCENTAGE
