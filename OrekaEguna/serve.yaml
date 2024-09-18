@@ -1,0 +1,50 @@
+apiVersion: ai.sap.com/v1alpha1
+kind: ServingTemplate
+metadata:
+  name: orek-eguna-serve-0
+  annotations:
+    scenarios.ai.sap.com/description: "Oreka Eguna"
+    scenarios.ai.sap.com/name: oreka-eguna-scenario
+    executables.ai.sap.com/description: "GPU Serving executable"
+    executables.ai.sap.com/name: "serve-exectuable"
+    artifacts.ai.sap.com/modelai.kind: "model" # Suggest the kind of artifact to input.
+  labels:
+    scenarios.ai.sap.com/id: "oreka-eguna-scenario"
+    ai.sap.com/version: "1.0.1"
+spec:
+  inputs:
+    artifacts:
+      - name: modelai # placeholder name, do not add `-` in value use only alphanumeric chars
+    parameters:
+      - name: ALG # placeholder name
+        type: string # required for every parameters
+  template:
+    apiVersion: "serving.kserve.io/v1beta1"
+    metadata:
+      annotations: |
+        autoscaling.knative.dev/metric: concurrency   # condition when to scale
+        autoscaling.knative.dev/target: 1
+        autoscaling.knative.dev/targetBurstCapacity: 0
+      labels: |
+        ai.sap.com/resourcePlan: starter
+    spec: |
+      predictor:
+        imagePullSecrets:
+          - name: cp-test-docker-registry 
+        minReplicas: 1
+        maxReplicas: 5    # how much to scale
+        containers:
+        - name: kfserving-container
+          image: docker.io/deliaalene/oreka-eguna_serving:01
+          ports:
+            - containerPort: 9001
+              protocol: TCP
+          command: ["/bin/sh", "-c"]
+          args:
+            - >
+              set -e && echo "Starting" && gunicorn --chdir /app/src serve:app -b 0.0.0.0:9001 # filename `main` flask variable `app`
+          env:
+            - name: ALG # different name to avoid confusion
+              value: "{{inputs.parameters.ALG}}"
+            - name: STORAGE_URI # Required
+              value: "{{inputs.artifacts.modelai}}" # Required reference from artifact name, see above
