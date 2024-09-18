@@ -31,8 +31,6 @@ spec:
         image: docker.io/deliaalene/oreka-eguna:01
         imagePullPolicy: Always
         command: ["/bin/sh", "-c"]
-        args: 
-          - "python app/src/train.py"
         env:
           - name: ALG # name of the environment variable inside Docker container
             value: "{{workflow.parameters.ALG}}" # value to set from local (to workflow) variable DT_MAX_DEPTH
@@ -40,3 +38,6 @@ spec:
             value: "{{workflow.parameters.DT_MAX_DEPTH}}" # value to set from local (to workflow) variable DT_MAX_DEPTH
           - name: MIN_PERCENTAGE # name of the environment variable inside Docker container
             value: "{{workflow.parameters.MIN_PERCENTAGE}}" # value to set from local (to workflow) variable MIN_PERCENTAGE
+        args:
+          - >
+            set -e && echo "---Start Training---" && python /app/src/train.py && ls -lR /app/model && echo "---End Training---"
